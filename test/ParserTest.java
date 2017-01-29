@@ -1,11 +1,12 @@
-import com.velvet.*;
+import com.velvet.parser.Parser;
+import com.velvet.section.*;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.format;
 import static junit.framework.TestCase.fail;
 
 /**
@@ -44,7 +45,7 @@ public class ParserTest {
                 "comment. */\n" +
                 "\n" +
                 "The End.\n";
-        List<String> sections = Parser.splitFileIntoCommentSections(INPUT);
+        java.util.List sections = Parser.splitFileIntoCommentSections(INPUT);
         assertTrue(sections.size() == 4);
     }
 
@@ -161,11 +162,17 @@ public class ParserTest {
                 "   * And double lines\n" +
                 "     just for you.";
 
-        Map<Integer, VelvetList> lists = Parser.getLists(TEXT);
+        Map<Integer, List> lists = Parser.getLists(TEXT);
         for (Integer key:
              lists.keySet()) {
-            VelvetList list = lists.get(key);
+            List list = lists.get(key);
             System.out.println("(" + key + "):\n" + list.getSourceText());
+            System.out.println("(content):");
+            for (int i = 0; i < list.getItems().size(); i++) {
+
+                Paragraph par = list.getItems().get(i);
+                System.out.println("[" + i + "]:" + par.getText());
+            }
         }
 
         assertTrue(lists.size() == 3);
@@ -178,9 +185,5 @@ public class ParserTest {
             System.out.println(ioEx.getMessage());
             return null;
         }
-    }
-
-    static String getFirstSection(String file) {
-        return Parser.splitFileIntoCommentSections(file).get(0);
     }
 }

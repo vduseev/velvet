@@ -1,4 +1,7 @@
-package com.velvet;
+package com.velvet.parser;
+
+import com.velvet.Document;
+import com.velvet.section.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +27,7 @@ public class Parser {
         sectionMap.putAll(headerMap);
 
         // Match lists
-        Map<Integer, VelvetList> listMap = getLists(text);
+        Map<Integer, com.velvet.section.List> listMap = getLists(text);
         sectionMap.putAll(listMap);
 
         // Match paragraphs
@@ -41,7 +44,7 @@ public class Parser {
 
         // Sort keys
         Set<Integer> sectionMapKeys = sectionMap.keySet();
-        List<Integer> sortedSectionMapKeys = new ArrayList<Integer>(sectionMapKeys);
+        java.util.List<Integer> sortedSectionMapKeys = new ArrayList<Integer>(sectionMapKeys);
         java.util.Collections.sort(sortedSectionMapKeys);
 
         // Add sections to doc in the correct order
@@ -119,25 +122,6 @@ public class Parser {
         return diagrams;
     }
 
-    public static Map<Integer, VelvetList> getLists(String text) {
-
-        String listRegEx = "(?:\\G|\\n{1,2})(\\s*(\\*|n.|N.)\\s.+?)(\\n\\n|$|\\n$)";
-        Pattern pattern = Pattern.compile(listRegEx, Pattern.DOTALL);
-        Matcher matcher = pattern.matcher(text);
-
-        Map<Integer, VelvetList> lists = new HashMap<Integer, VelvetList>();
-        while (matcher.find()) {
-
-            String listSource = matcher.group(1);// + "%%%" + matcher.group(2);// + "%%%" + matcher.group(3);;
-            Integer key = matcher.start();
-
-            VelvetList list = VelvetList.fromVelvetText(listSource);
-            lists.put(key, list);
-        }
-
-        return lists;
-    }
-
     public static Map<Integer, Table> getTables(String text) {
 
         String tableRegEx = "[\\^\\n]\\s*(\\|.+?\\|)(\\n[^\\|]|$|\\n$)";
@@ -157,33 +141,37 @@ public class Parser {
         return tables;
     }
 
+    public static Map<Integer, com.velvet.section.List> getLists(String text) {
+
+        String listRegEx = "(?:\\G|\\n{1,2})(\\s*(\\*|n.|N.)\\s.+?)(\\n\\n|$|\\n$)";
+        Pattern pattern = Pattern.compile(listRegEx, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(text);
+
+        Map<Integer, com.velvet.section.List> lists = new HashMap<Integer, com.velvet.section.List>();
+        while (matcher.find()) {
+
+            String listSource = matcher.group(1);// + "%%%" + matcher.group(2);// + "%%%" + matcher.group(3);;
+            Integer key = matcher.start();
+
+            com.velvet.section.List list = com.velvet.section.List.fromVelvetText(listSource);
+            lists.put(key, list);
+        }
+
+        return lists;
+    }
+
     public static boolean isHeader(String line) {
 
         return line.matches("(\\s*)(#+)(\\s*)(.+)");
     }
 
-//    public static List<Paragraph> getParagraphs(String text) {
-//        String reg = "(\\s*)(.+?)(\n|\\z)";
-//        Pattern pattern = Pattern.compile(reg, Pattern.DOTALL);
-//        Matcher matcher = pattern.matcher(text);
-//
-//        List<Paragraph> paragraphs = new ArrayList<Paragraph>();
-//        while (matcher.find()) {
-//            Paragraph paragraph = new Paragraph();
-//            paragraph.text = matcher.group(2);
-//            paragraphs.add(paragraph);
-//        }
-//
-//        return paragraphs;
-//    }
-
-    public static List<String> splitFileIntoCommentSections(String text) {
+    public static java.util.List splitFileIntoCommentSections(String text) {
 
         String reg = "/\\*\\s*(.*?)\\s*\\*/";
         Pattern pattern = Pattern.compile(reg, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(text);
 
-        List<String> sections = new ArrayList<String>();
+        java.util.List sections = new ArrayList<String>();
         while (matcher.find()) {
             sections.add(matcher.group(1));
         }

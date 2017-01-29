@@ -1,5 +1,7 @@
 package com.velvet;
 
+import com.velvet.parser.Parser;
+
 import java.io.IOException;
 import java.util.List;
 
