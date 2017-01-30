@@ -133,16 +133,30 @@ public class ParserTest {
                 "|H1|\n" +
                 "|--|\n" +
                 "|R1|\n" +
-                "|R2|";
+                "|R2|\n" +
+                "\n" +
+                "|That's a table with wrong number of columns|\n" +
+                "|See, this won't be counted|Two columns in a second row here|\n" +
+                "\n" +
+                "|Just value| Another value|More values with no header |\n" +
+                "|Damn that's it | I can put it here all day | Here it is |\n";
 
         Map<Integer, Table> tables = Parser.getTables(TEXT);
         for (Integer key:
              tables.keySet()) {
             Table table = tables.get(key);
             System.out.println("(" + key + "):\n" + table.getSourceText());
+
+            System.out.println("Actual table (" + (table.hasHeader() ? "with header" : "no header") +"):");
+            for (int r = 0; r < table.getRowCount(); r++) {
+                for (int c = 0; c < table.getColumnCount(); c++) {
+                    System.out.print("|" + table.get(r, c) + "|");
+                }
+                System.out.print("\n");
+            }
         }
 
-        assertTrue(tables.size() == 2);
+        assertTrue(tables.size() == 3);
     }
 
     @Test

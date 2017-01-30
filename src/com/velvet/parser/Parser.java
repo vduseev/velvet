@@ -124,7 +124,7 @@ public class Parser {
 
     public static Map<Integer, Table> getTables(String text) {
 
-        String tableRegEx = "[\\^\\n]\\s*(\\|.+?\\|)(\\n[^\\|]|$|\\n$)";
+        String tableRegEx = "(?:\\G|\\n{1,2})\\s*(\\|.+?\\|)(\\n[^\\|]|$|\\n$)";
         Pattern pattern = Pattern.compile(tableRegEx, Pattern.DOTALL);
         Matcher matcher = pattern.matcher(text);
 
@@ -135,7 +135,10 @@ public class Parser {
             Integer key = matcher.start();
 
             Table table = Table.fromVelvetText(tableSource);
-            tables.put(key, table);
+
+            if (table != null) {
+                tables.put(key, table);
+            }
         }
 
         return tables;
